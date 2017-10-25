@@ -48,10 +48,12 @@ void RconServer::Start()
 	}
 	running = true;
 	workThread = new thread(&RconServer::Listen, this);
+	bf2server_set_chat_cb(std::bind(&RconServer::OnChatInput, this, std::placeholders::_1));
 }
 
 void RconServer::Stop()
 {
+	bf2server_set_chat_cb(NULL);
 	running = false;
 	closesocket(listenSocket);
 	workThread->join();
@@ -105,4 +107,11 @@ void RconServer::OnClientDisconnect(RconClient * client)
 	}
 	clients.erase(clients.begin() + idx);
 	delete client;
+}
+
+void RconServer::OnChatInput(string const & msg)
+{
+	for (RconClient *c : clients) {
+		c->OnChatInput(msg);
+	}
 }

@@ -13,6 +13,7 @@ public:
 	~RconClient();
 	void Stop();
 	void Start();
+	void OnChatInput(string const & msg);
 
 private:
 	SOCKET socket;
@@ -23,9 +24,7 @@ private:
 	thread* workThread;
 
 	void HandleCommand(string const & command);
-	void SendResponse(vector<string> &response);
-	void SendStatus();
-	void SendPlayers();
+	void Send(vector<string> &response);
 	void HandleConnection();
-	wstring s2ws(string const & s);
+
 };

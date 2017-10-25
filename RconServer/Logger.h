@@ -37,8 +37,8 @@ public:
 
 private:
 	void LogToFile(const string &s);
-	LogLevel minLevelStdout = LogLevel_VERBOSE;
-	LogLevel minLevelFile = LogLevel_WARNING;
+	LogLevel minLevelStdout = LogLevel_ERROR;
+	LogLevel minLevelFile = LogLevel_ERROR;
 	mutex mtx;
 	string logFile = "C:\\Users\\Jan\\Desktop\\log.txt";
 };

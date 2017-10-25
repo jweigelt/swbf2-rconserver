@@ -27,6 +27,7 @@ private:
 	uint16_t maxClients;
 	string passwordHash;
 	void OnClientDisconnect(RconClient *client);
+	void OnChatInput(string const & msg);
 	mutex mtx;
 	thread* workThread;
 };

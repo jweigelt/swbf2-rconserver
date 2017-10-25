@@ -10,10 +10,23 @@ static RconServer* server;
 DWORD WINAPI Run(LPVOID p) {
 	server = new RconServer(4658, 100, "1234");
 	server->Start();
+
 	bf2server_init();
+
+	Sleep(500);
+
+	if (bf2server_login()) {
+		Logger.Log(LogLevel_INFO, "Login OK.");
+	}
+	else {
+		Logger.Log(LogLevel_INFO, "Login failed.");
+	}
+
+	bf2server_set_details(1);
 
 	while (!GetAsyncKeyState(VK_ESCAPE)) {
 		Sleep(100);
+		string r;
 	}
 
 	server->Stop();
