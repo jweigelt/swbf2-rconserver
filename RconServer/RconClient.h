@@ -5,11 +5,12 @@
 #include <thread>
 #include "Logger.h"
 #include "bf2server.h"
+#include "md5.h"
 
 class RconClient
 {
 public:
-	RconClient(SOCKET &socket, function<void(RconClient *c)> onDisconnect, string const &passwordHash);
+	RconClient(SOCKET &socket, function<void(RconClient *c)> onDisconnect);
 	~RconClient();
 	void Stop();
 	void Start();
@@ -19,7 +20,6 @@ private:
 	SOCKET socket;
 	bool CheckLogin();
 	bool connected;
-	string passwordHash;
 	function<void(RconClient *c)> onDisconnect = NULL;
 	thread* workThread;
 

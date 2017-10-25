@@ -1,9 +1,8 @@
 #include "RconClient.h"
 
-RconClient::RconClient(SOCKET & socket, function<void(RconClient*c)> onDisconnect, string const & passwordHash)
+RconClient::RconClient(SOCKET & socket, function<void(RconClient*c)> onDisconnect)
 {
 	this->socket = socket;
-	this->passwordHash = passwordHash;
 	this->onDisconnect = onDisconnect;
 }
 
@@ -49,7 +48,9 @@ bool RconClient::CheckLogin()
 		return false;
 	}
 
-	if (passwordHash.compare(pwd) == 0) {
+	string pwdHash = md5(bf2server_get_adminpwd());
+
+	if (pwdHash.compare(pwd) == 0) {
 		Logger.Log(LogLevel_VERBOSE, "Client logged in.", pwd);
 		res = 1;
 	}
@@ -58,6 +59,8 @@ bool RconClient::CheckLogin()
 		res = 0;
 	}
 	send(socket, &res, 1, 0);
+
+	bf2server_login();
 
 	return (res == 1);
 }

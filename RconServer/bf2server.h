@@ -24,7 +24,6 @@
 #define DETAILS_VERBOSE 1
 #define DETAILS_NORMAL 0
 
-
 /**
  *	Initializes server-access
  **/

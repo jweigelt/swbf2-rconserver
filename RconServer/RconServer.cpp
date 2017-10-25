@@ -1,11 +1,10 @@
 #include "RconServer.h"
 
 
-RconServer::RconServer(uint16_t port, uint16_t maxClients, string const & password)
+RconServer::RconServer(uint16_t port, uint16_t maxClients)
 {
 	this->port = port;
 	this->maxClients = maxClients;
-	this->passwordHash = md5(password);
 }
 
 RconServer::~RconServer()
@@ -70,7 +69,7 @@ void RconServer::Listen()
 			Logger.Log(LogLevel_WARNING, "Client connect failed with %ld", WSAGetLastError());
 		}
 		else {
-			RconClient* client = new RconClient(clientSocket, std::bind(&RconServer::OnClientDisconnect, this, std::placeholders::_1), passwordHash);
+			RconClient* client = new RconClient(clientSocket, std::bind(&RconServer::OnClientDisconnect, this, std::placeholders::_1));
 			{
 				lock_guard<mutex> lg(mtx);
 				clients.push_back(client);

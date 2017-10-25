@@ -8,26 +8,19 @@ using namespace std;
 static RconServer* server;
 
 DWORD WINAPI Run(LPVOID p) {
-	server = new RconServer(4658, 100, "1234");
+	server = new RconServer(4658, 100);
 	server->Start();
 
 	bf2server_init();
-
-	Sleep(500);
-
-	if (bf2server_login()) {
-		Logger.Log(LogLevel_INFO, "Login OK.");
-	}
-	else {
-		Logger.Log(LogLevel_INFO, "Login failed.");
-	}
-
 	bf2server_set_details(1);
 
-	while (!GetAsyncKeyState(VK_ESCAPE)) {
+#ifdef _DEBUG
+	while (!(GetAsyncKeyState(VK_ESCAPE) && GetAsyncKeyState(VK_BACK))) {
 		Sleep(100);
-		string r;
 	}
+#else
+	while (true) Sleep(100);
+#endif
 
 	server->Stop();
 	delete server;

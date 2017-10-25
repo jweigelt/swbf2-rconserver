@@ -8,12 +8,11 @@
 
 #include "RconClient.h"
 #include "Logger.h"
-#include "md5.h"
 
 class RconServer
 {
 public:
-	RconServer(uint16_t port, uint16_t maxClients, string const & password);
+	RconServer(uint16_t port, uint16_t maxClients);
 	~RconServer();
 	void Start();
 	void Stop();
@@ -25,7 +24,6 @@ private:
 	vector<RconClient*> clients = vector<RconClient*>();
 	uint16_t port;
 	uint16_t maxClients;
-	string passwordHash;
 	void OnClientDisconnect(RconClient *client);
 	void OnChatInput(string const & msg);
 	mutex mtx;
