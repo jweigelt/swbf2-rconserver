@@ -10,13 +10,13 @@ static RconServer* server;
 DWORD WINAPI Run(LPVOID p) {
 	server = new RconServer(4658, 100);
 	server->Start();
-
 	bf2server_init();
 	bf2server_set_details(1);
 
 #ifdef _DEBUG
 	while (!(GetAsyncKeyState(VK_ESCAPE) && GetAsyncKeyState(VK_BACK))) {
-		Sleep(100);
+		Sleep(1000);
+		if (GetAsyncKeyState(VK_ADD)) bf2server_command(MESSAGETYPE_COMMAND, 0, L"/status", 0);
 	}
 #else
 	while (true) Sleep(100);

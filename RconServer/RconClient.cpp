@@ -116,6 +116,7 @@ void RconClient::HandleConnection()
 			break;
 		}
 		buffer = new char[sz];
+	
 
 		while (sz > bytesRead) {
 			if ((fragment = recv(socket, buffer + bytesRead, sz - bytesRead, 0)) == SOCKET_ERROR) {

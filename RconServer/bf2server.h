@@ -3,12 +3,26 @@
 #include <functional>
 #include "Logger.h"
 
+//#define GOG
+
+
+#ifdef GOG
 //Offsets for GOG's BattlefrontII.exe
 #define OFFSET_CHATINPUT 0x1B0030
 #define OFFSET_CHATSNPRINTF 0x1B2F67
 #define OFFSET_RESBUFFER 0x1BA2830
 #define OFFSET_ADMINPW 0x1A57E10
 #define OFFSET_COMMAND_DETAILS 0x1A57E2C
+#else
+//530, 520, 1120, , 10CF
+
+#define OFFSET_CHATINPUT 0x1AFB00 + 0x1000
+#define OFFSET_CHATSNPRINTF 0x1B2A47 + 0x1000 
+#define OFFSET_RESBUFFER 0x1BA3950 + 0x1000
+#define OFFSET_ADMINPW 0x1A653A0
+#define OFFSET_COMMAND_DETAILS 0x1A58EFB + 0x1000
+#endif
+
 
 #define ASM_NOP 0x90
 #define ASM_JMP 0xE9
