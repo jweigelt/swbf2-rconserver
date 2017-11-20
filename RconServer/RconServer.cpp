@@ -5,6 +5,9 @@ RconServer::RconServer(uint16_t port, uint16_t maxClients)
 {
 	this->port = port;
 	this->maxClients = maxClients;
+
+	bf2server_init();
+	bf2server_set_details(1);
 }
 
 RconServer::~RconServer()

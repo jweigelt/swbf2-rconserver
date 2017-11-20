@@ -7,6 +7,12 @@
 #include "bf2server.h"
 #include "md5.h"
 
+using std::string;
+using std::vector;
+using std::thread;
+using std::mutex;
+using std::lock_guard;
+
 class RconClient
 {
 public:
@@ -22,6 +28,7 @@ private:
 	bool connected;
 	function<void(RconClient *c)> onDisconnect = NULL;
 	thread* workThread;
+	mutex mtx;
 
 	void HandleCommand(string const & command);
 	void Send(vector<string> &response);

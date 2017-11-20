@@ -10,16 +10,15 @@ _Logger::~_Logger()
 
 void _Logger::Log(LogLevel level, const char* msg, ...) {
 
+	lock_guard <mutex> lg(mtx);
+
 	if (minLevelStdout <= level) {
-		lock_guard <mutex> lg(mtx);
-		{
-			printf(LOG_LEVELS[level]);
-			va_list args;
-			va_start(args, msg);
-			vprintf(msg, args);
-			va_end(args);
-			printf("\n");
-		}
+		printf(LOG_LEVELS[level]);
+		va_list args;
+		va_start(args, msg);
+		vprintf(msg, args);
+		va_end(args);
+		printf("\n");
 	}
 
 	if (minLevelFile <= level) {
@@ -38,12 +37,12 @@ void _Logger::SetMinLevelFile(LogLevel level)
 	minLevelFile = level;
 }
 
-void _Logger::SetFileName(const string & fileName)
+void _Logger::SetFileName(string const & fileName)
 {
 	logFile = fileName;
 }
 
-void _Logger::LogToFile(const string & s)
+void _Logger::LogToFile(string const &  s)
 {
 	ofstream f;
 	f.open(logFile, f.app);

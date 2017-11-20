@@ -1,9 +1,7 @@
 #include "bf2server.h"
-#include <stdio.h>
 
 DWORD moduleBase, chatCCAddr;
 function<void(string const &msg)> chatCB;
-
 
 void bf2server_init() {
 	moduleBase = (DWORD)GetModuleHandle(L"BattlefrontII.exe");
@@ -11,7 +9,7 @@ void bf2server_init() {
 	bf2server_set_chat_cc();
 }
 
-string bf2server_command(DWORD messageType, DWORD sender, const wchar_t* message, DWORD responseOutput) {
+std::string bf2server_command(DWORD messageType, DWORD sender, const wchar_t* message, DWORD responseOutput) {
 	//NOTE: function might not be threadsafe
 	DWORD addr = moduleBase + OFFSET_CHATINPUT;
 
@@ -25,7 +23,7 @@ string bf2server_command(DWORD messageType, DWORD sender, const wchar_t* message
 	}
 
 	addr = moduleBase + OFFSET_RESBUFFER;
-	return  string((char*)(addr));
+	return string((char*)(addr));
 }
 
 void bf2server_set_chat_cc() {
@@ -49,14 +47,14 @@ int __cdecl bf2server_chat_cc(char* buf, size_t sz, const char* fmt, ...) {
 	ret = vsnprintf(buf, sz, fmt, args);
 	va_end(args);
 	Logger.Log(LogLevel_VERBOSE, buf);
-	if (chatCB != NULL) chatCB(string(buf));
+	if (chatCB != NULL) chatCB(std::string(buf));
 	return ret;
 }
 
-string bf2server_get_adminpwd()
+std::string bf2server_get_adminpwd()
 {
 	DWORD addr = moduleBase + OFFSET_ADMINPW;
-	return string((char*)addr);
+	return std::string((char*)addr);
 }
 
 bool bf2server_login()

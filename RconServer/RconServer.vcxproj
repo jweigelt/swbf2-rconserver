@@ -143,6 +143,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="bf2server.h" />
+    <ClInclude Include="config.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="md5.h" />
     <ClInclude Include="RconClient.h" />

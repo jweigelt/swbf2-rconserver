@@ -8,7 +8,11 @@
 #include <fstream>
 #include <mutex>
 
-using namespace std;
+using std::string;
+using std::ofstream;
+using std::mutex;
+using std::lock_guard;
+
 
 enum LogLevel {
 	LogLevel_VERBOSE = 0,
@@ -33,7 +37,7 @@ public:
 	void Log(LogLevel level, const char* msg, ...);
 	void SetMinLevelStdout(LogLevel level);
 	void SetMinLevelFile(LogLevel level);
-	void SetFileName(const string &fileName);
+	void SetFileName(string const &fileName);
 
 private:
 	void LogToFile(const string &s);

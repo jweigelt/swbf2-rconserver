@@ -1,6 +1,6 @@
 #include "RconClient.h"
 
-RconClient::RconClient(SOCKET & socket, function<void(RconClient*c)> onDisconnect)
+RconClient::RconClient(SOCKET & socket, std::function<void(RconClient*c)> onDisconnect)
 {
 	this->socket = socket;
 	this->onDisconnect = onDisconnect;
@@ -18,35 +18,24 @@ void RconClient::Stop()
 
 void RconClient::Start()
 {
-	workThread = new thread(&RconClient::HandleConnection, this);
+	workThread = new std::thread(&RconClient::HandleConnection, this);
 }
 
-void RconClient::OnChatInput(string const & msg)
+void RconClient::OnChatInput(std::string const & msg)
 {
-	vector<string> rows = vector<string>();
+	std::vector<std::string> rows = std::vector<std::string>();
 	rows.push_back(msg);
 	Send(rows);
 }
 
 bool RconClient::CheckLogin()
 {
-	char pwd[33];
-	char magic = 0;
-	char res;
-
+	char pwd[33], magic, res;
 	pwd[32] = 0x00;
 
-	if (recv(socket, pwd, 32, 0) != 32) {
-		return false;
-	}
-
-	if (recv(socket, &magic, 1, 0) != 1) {
-		return false;
-	}
-
-	if (magic != 0x64) {
-		return false;
-	}
+	if (recv(socket, pwd, 32, 0) != 32) return false;
+	if (recv(socket, &magic, 1, 0) != 1) return false;
+	if (magic != 0x64) return false;
 
 	string pwdHash = md5(bf2server_get_adminpwd());
 
@@ -58,14 +47,13 @@ bool RconClient::CheckLogin()
 		Logger.Log(LogLevel_VERBOSE, "Client sent wrong password '%s'", pwd);
 		res = 0;
 	}
+
 	send(socket, &res, 1, 0);
-
 	bf2server_login();
-
 	return (res == 1);
 }
 
-void RconClient::HandleCommand(string const & command)
+void RconClient::HandleCommand(std::string const & command)
 {
 	string res = bf2server_command(MESSAGETYPE_COMMAND, 0, bf2server_s2ws(command).c_str(), OUTPUT_BUFFER);
 	vector<string> rows = vector<string>();
@@ -82,6 +70,8 @@ void RconClient::HandleCommand(string const & command)
 
 void RconClient::Send(vector<string> &response)
 {
+	lock_guard<mutex> lg(mtx);
+
 	unsigned char rowLen = 0;
 	unsigned char rows = (unsigned char)response.size();
 	send(socket, (char*)&rows, 1, 0);
@@ -95,11 +85,8 @@ void RconClient::Send(vector<string> &response)
 
 void RconClient::HandleConnection()
 {
-	unsigned char rows = 0;
-	unsigned char sz = 0;
-	unsigned char bytesRead = 0;
+	unsigned char rows, sz, bytesRead, fragment;
 	char* buffer;
-	int fragment = 0;
 	bool err = false;
 
 	if (!(connected = CheckLogin())) {
@@ -107,17 +94,12 @@ void RconClient::HandleConnection()
 	}
 
 	while (connected) {
-		//we expect 1 row -> ignore rowCount
-		if (recv(socket, (char*)&rows, 1, 0) != 1) {
-			break;
-		}
+		bytesRead = 0;
+		if (recv(socket, (char*)&rows, 1, 0) != 1) break;
+		if (recv(socket, (char*)&sz, 1, 0) != 1) break;
 
-		if (recv(socket, (char*)&sz, 1, 0) != 1) {
-			break;
-		}
 		buffer = new char[sz];
 	
-
 		while (sz > bytesRead) {
 			if ((fragment = recv(socket, buffer + bytesRead, sz - bytesRead, 0)) == SOCKET_ERROR) {
 				err = true;
@@ -127,17 +109,15 @@ void RconClient::HandleConnection()
 			bytesRead += (char)fragment;
 		}
 
-		if (err) {
-			break;
-		}
+		if (err) break;
 
 		Logger.Log(LogLevel_VERBOSE, "Received command: %s", buffer);
 		HandleCommand(string(buffer));
 		delete[] buffer;
-		bytesRead = 0;
 	}
 
 	Logger.Log(LogLevel_VERBOSE, "Closing connection.");
+
 	if (connected) {
 		closesocket(socket);
 		connected = false;

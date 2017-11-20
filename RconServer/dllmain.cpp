@@ -1,30 +1,30 @@
 #pragma once
+#include "config.h"
 #include "RconServer.h"
 #include "bf2server.h"
 #include <Windows.h>
 
-using namespace std;
-
-static RconServer* server;
+static RconServer* dllmain_server;
+static bool dllmain_running;
+HANDLE dllmain_hThread;
 
 DWORD WINAPI Run(LPVOID p) {
-	server = new RconServer(4658, 100);
-	server->Start();
-	bf2server_init();
-	bf2server_set_details(1);
+	dllmain_server = new RconServer(RCON_PORT, MAX_CONNECTIONS);
+	dllmain_server->Start();
 
 #ifdef _DEBUG
+	Logger.SetMinLevelFile(LogLevel_VERBOSE);
 	while (!(GetAsyncKeyState(VK_ESCAPE) && GetAsyncKeyState(VK_BACK))) {
 		Sleep(1000);
-		if (GetAsyncKeyState(VK_ADD)) bf2server_command(MESSAGETYPE_COMMAND, 0, L"/status", 0);
 	}
 #else
-	while (true) Sleep(100);
+	Logger.SetMinLevelFile(LogLevel_ERROR);
+	while (dllmain_running) Sleep(100);
 #endif
 
-	server->Stop();
-	delete server;
-	server = NULL;
+	dllmain_server->Stop();
+	delete dllmain_server;
+
 	FreeLibraryAndExitThread((HMODULE)p, 0);
 	return 0;
 }
@@ -34,15 +34,13 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD dwReason, IN LPVOID dwReserved) {
 	switch (dwReason)
 	{
 	case DLL_PROCESS_ATTACH:
-		CreateThread(0, 0, Run, hModule, 0, 0);
+		dllmain_running = true;
+		dllmain_hThread = CreateThread(0, 0, Run, hModule, 0, 0);
 		break;
 
 	case DLL_PROCESS_DETACH:
-		if (server != NULL) {
-			server->Stop();
-			delete server;
-			server = NULL;
-		}
+		dllmain_running = false;
+		WaitForSingleObject(dllmain_hThread, 1000);
 		break;
 	}
 

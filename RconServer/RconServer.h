@@ -9,6 +9,12 @@
 #include "RconClient.h"
 #include "Logger.h"
 
+using std::string;
+using std::vector;
+using std::thread;
+using std::mutex;
+using std::lock_guard;
+
 class RconServer
 {
 public:
@@ -19,13 +25,15 @@ public:
 	void Listen();
 
 private:
-	SOCKET listenSocket;
 	bool running = false;
+	mutex mtx;
 	vector<RconClient*> clients = vector<RconClient*>();
+	SOCKET listenSocket;
+
 	uint16_t port;
 	uint16_t maxClients;
 	void OnClientDisconnect(RconClient *client);
 	void OnChatInput(string const & msg);
-	mutex mtx;
-	thread* workThread;
+
+	std::thread* workThread;
 };

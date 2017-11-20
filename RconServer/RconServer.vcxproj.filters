@@ -30,12 +30,12 @@
     <ClInclude Include="RconClient.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="config.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RconServer.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="bf2server.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Logger.cpp">
@@ -48,6 +48,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="dllmain.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="bf2server.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
