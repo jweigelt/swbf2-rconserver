@@ -1,6 +1,5 @@
 #include "RconServer.h"
 
-
 RconServer::RconServer(uint16_t port, uint16_t maxClients)
 {
 	this->port = port;
@@ -82,6 +81,7 @@ void RconServer::Listen()
 		}
 	}
 
+	lock_guard<mutex> lg(mtx);
 	for (RconClient* c : clients)
 	{
 		c->Stop();
@@ -113,6 +113,7 @@ void RconServer::OnClientDisconnect(RconClient * client)
 
 void RconServer::OnChatInput(string const & msg)
 {
+	lock_guard<mutex> lg(mtx);
 	for (RconClient *c : clients) {
 		c->OnChatInput(msg);
 	}

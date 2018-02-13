@@ -6,18 +6,34 @@ using std::string;
 using std::wstring;
 using std::function;
 
+/*
+//LEGACY
 #ifdef GALAXY
-#define OFFSET_CHATINPUT 0x1B0030
-#define OFFSET_CHATSNPRINTF 0x1B2F67
-#define OFFSET_RESBUFFER 0x1BA2830
-#define OFFSET_ADMINPW 0x1A57E10
-#define OFFSET_COMMAND_DETAILS 0x1A57E2C
+//GOG Galaxy Version
+#define OFFSET_CHATINPUT 0x1B0030			//function pointer to chat input function
+#define OFFSET_CHATSNPRINTF 0x1B2F67		//address to snprintf-call for chat-output	
+#define OFFSET_RESBUFFER 0x1BA2830			//address of command response buffer
+#define OFFSET_ADMINPW 0x1A57E10			//address of admin-password
+#define OFFSET_COMMAND_DETAILS 0x1A57E2C	//address of "details"-dword which will determine of command-output is verbose
 #else
+//Steam Version
 #define OFFSET_CHATINPUT 0x1AFB00 + 0x1000
 #define OFFSET_CHATSNPRINTF 0x1B2A47 + 0x1000 
 #define OFFSET_RESBUFFER 0x1BA3950 + 0x1000
 #define OFFSET_ADMINPW 0x1A653A0
 #define OFFSET_COMMAND_DETAILS 0x1A58EFB + 0x1000
+#endif
+*/
+
+#ifdef GALAXY
+//TODO
+#else
+//Steam Version
+#define OFFSET_CHATINPUT 0x005AF090 - 0x00401000 + 0x1000
+#define OFFSET_CHATSNPRINTF 0x005B1FC7 - 0x00401000 + 0x1000 
+#define OFFSET_RESBUFFER 0x01FA2518 - 0x00401000 + 0x1000
+#define OFFSET_COMMAND_DETAILS 0x01E57A0C - 0x00401000 + 0x1000
+#define OFFSET_ADMINPW 0x1A57A10
 #endif
 
 #define ASM_NOP 0x90
@@ -27,12 +43,13 @@ using std::function;
 
 #define MESSAGETYPE_CHAT 1
 #define MESSAGETYPE_COMMAND 0
-
-#define OUTPUT_CHAR 0
-#define OUTPUT_BUFFER -1
-
 #define DETAILS_VERBOSE 1
 #define DETAILS_NORMAL 0
+
+#define OUTPUT_CHAT 0
+#define OUTPUT_BUFFER -1
+#define SENDER_SELF 1
+#define SENDER_REMOTE 0
 
 /**
  *	Initializes server-access

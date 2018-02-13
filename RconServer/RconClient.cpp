@@ -122,6 +122,5 @@ void RconClient::HandleConnection()
 		closesocket(socket);
 		connected = false;
 	}
-
 	onDisconnect(this);
 }

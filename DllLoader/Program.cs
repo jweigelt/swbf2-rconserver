@@ -18,8 +18,10 @@ namespace DllLoader
                 Console.WriteLine(e.ToString());
             }
 
+#if DEBUG
             Console.WriteLine("Press [return] to exit.");
             Console.ReadLine();
+#endif
         }
     }
 }
