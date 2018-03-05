@@ -55,7 +55,7 @@ bool RconClient::CheckLogin()
 
 void RconClient::HandleCommand(std::string const & command)
 {
-	string res = bf2server_command(MESSAGETYPE_COMMAND, 0, bf2server_s2ws(command).c_str(), OUTPUT_BUFFER);
+	string res = bf2server_command(MESSAGETYPE_COMMAND, SENDER_REMOTE, bf2server_s2ws(command).c_str(), OUTPUT_BUFFER);
 	vector<string> rows = vector<string>();
 	size_t op = 0;
 	size_t np = 0;

@@ -11,8 +11,9 @@ void bf2server_init() {
 
 std::string bf2server_command(DWORD messageType, DWORD sender, const wchar_t* message, DWORD responseOutput) {
 	//NOTE: function might not be threadsafe
+	DWORD aa = moduleBase + OFFSET_LOGGED_IN;
 	DWORD addr = moduleBase + OFFSET_CHATINPUT;
-
+	*(BYTE*)aa = 1;
 	__asm {
 		push messageType
 		push sender
@@ -21,7 +22,7 @@ std::string bf2server_command(DWORD messageType, DWORD sender, const wchar_t* me
 		call dword ptr[addr];
 		add esp, 8
 	}
-
+	*(BYTE*)aa = 0;
 	addr = moduleBase + OFFSET_RESBUFFER;
 	return string((char*)(addr));
 }
@@ -59,10 +60,11 @@ std::string bf2server_get_adminpwd()
 
 bool bf2server_login()
 {
-	string loginCommand = string("/login ") + bf2server_get_adminpwd();
-	string res = bf2server_command(MESSAGETYPE_COMMAND, 0, bf2server_s2ws(loginCommand).c_str(), OUTPUT_BUFFER);
+	//string loginCommand = string("/login ") + bf2server_get_adminpwd();
+	//string res = bf2server_command(MESSAGETYPE_COMMAND, SENDER_SELF,  bf2server_s2ws(loginCommand).c_str(), OUTPUT_BUFFER);
 
-	return (res.compare("logged in\n") == 0);
+	//return (res.compare("logged in\n") == 0);
+	return true;
 }
 
 void bf2server_set_details(BYTE mode)
